@@ -1,0 +1,131 @@
+{
+    "project": {
+        "name": "yocto-router",
+        "description": "Managing routes configuration for an express app",
+        "version": "0.1.0",
+        "url": "http://www.yocto.re"
+    },
+    "files": {
+        "src/index.js": {
+            "name": "src/index.js",
+            "modules": {},
+            "classes": {
+                "Router": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "Router": {
+            "name": "Router",
+            "shortname": "Router",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/index.js",
+            "line": 12,
+            "description": "Yocto Router\nManage Your own routes defines on config files\n\nFor more details on these dependencies read links below :\n- yocto-logger : lab.yocto.digital:yocto-node-modules/yocto-logger.git\n- yocto-config : lab.yocto.digital:yocto-node-modules/yocto-config.git\n- yocto-utils : lab.yocto.digital:yocto-node-modules/yocto-utils.git\n- Lodash : https://lodash.com/\n- path : https://nodejs.org/api/path.html\n- joi : https://github.com/hapijs/joi\n- fs : https://nodejs.org/api/fs.html\n- glob : https://www.npmjs.com/package/glob",
+            "date": ": 09/06/2015",
+            "author": ": ROBERT Mathieu <mathieu@yocto.re>",
+            "copyright": ": Yocto SAS, All right reserved"
+        }
+    },
+    "classitems": [
+        {
+            "file": "src/index.js",
+            "line": 32,
+            "description": "Default logger instance",
+            "itemtype": "property",
+            "name": "logger",
+            "type": "Object",
+            "class": "Router"
+        },
+        {
+            "file": "src/index.js",
+            "line": 40,
+            "description": "Default config instance",
+            "itemtype": "property",
+            "name": "config",
+            "type": "Object",
+            "class": "Router"
+        },
+        {
+            "file": "src/index.js",
+            "line": 48,
+            "description": "Default base path for routes",
+            "itemtype": "property",
+            "name": "base",
+            "type": "String",
+            "class": "Router"
+        },
+        {
+            "file": "src/index.js",
+            "line": 56,
+            "description": "Default base path for controller assign on routes",
+            "itemtype": "property",
+            "name": "ctrl",
+            "type": "String",
+            "class": "Router"
+        },
+        {
+            "file": "src/index.js",
+            "line": 64,
+            "description": "Default app value must be an express app",
+            "itemtype": "property",
+            "name": "app",
+            "type": "String",
+            "default": "Null",
+            "class": "Router"
+        },
+        {
+            "file": "src/index.js",
+            "line": 74,
+            "description": "Default configure method, use for main process of module",
+            "itemtype": "method",
+            "name": "configure",
+            "return": {
+                "description": "true if all is ok false otherwise",
+                "type": "Boolean"
+            },
+            "class": "Router"
+        },
+        {
+            "file": "src/index.js",
+            "line": 186,
+            "description": "Set function, assign given data to a property",
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "name of property",
+                    "type": "String"
+                },
+                {
+                    "name": "value",
+                    "description": "value of property",
+                    "type": "Mixed"
+                }
+            ],
+            "return": {
+                "description": "current instance",
+                "type": "Object"
+            },
+            "class": "Router"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "unknown tag: date",
+            "line": " src/index.js:12"
+        },
+        {
+            "message": "unknown tag: copyright",
+            "line": " src/index.js:12"
+        }
+    ]
+}
