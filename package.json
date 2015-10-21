@@ -2,7 +2,6 @@
   "name": "yocto-router",
   "version": "1.0.0",
   "description": "Manage route configuration & mapping for an express app",
-  "private": true,
   "scripts": {},
   "author": {
     "name": "Yocto SAS",
