@@ -92,7 +92,8 @@ Router.prototype.configure = function () {
       // has routes ?
       if (_.isEmpty(mods)) {
         // war message
-        this.logger.warning([ 'Module [', ctrlName, '] doesn\'t have any routes.',
+        this.logger.warning([ '[ Router.configure ] - Module [', ctrlName,
+                              '] doesn\'t have any routes.',
                               'Remove this file or add one route configuration' ].join(' '));
       } else {
         // parses routes
