@@ -156,7 +156,7 @@ Router.prototype.configure = function () {
                                  [ mod.controller.name, mod.controller.fn ].join('.'),
                                  ']' ].join(' '));
               // adding route to current app
-              this.app[mod.method](mod.path, controller[mod.controller.fn]);
+              this.app[mod.method](mod.path, controller[mod.controller.fn].bind(this.app));
               // increment nb routes
               nbRoutes++;
             }

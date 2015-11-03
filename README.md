@@ -48,7 +48,6 @@ Your json configuration for routes must be follow these syntax :
   }
 ]
 ```
-
 See Below an example : 
 
 ```javascript
@@ -64,7 +63,6 @@ See Below an example :
 ]
 ```
 
-
 ## Controller Javascript files syntax
 
 If you are here, it's because you have already define a least one route.
@@ -76,6 +74,10 @@ exports.methodBar = function(req, res, next) {
   // your code here
 };
 ```
+
+## Context in your controller enpoint
+
+In your controller endpoint you can use `this` keywords to access on your express app
 
 ## Logging in tool
 

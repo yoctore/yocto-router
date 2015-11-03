@@ -12,3 +12,5 @@ if (!r.configure()) {
 } else {
   // nothing to do
 }
+
+app.listen(3000);

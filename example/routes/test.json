@@ -8,8 +8,8 @@
     }
   },
   {
-    "method"  : "post",
-    "path"    : "/ad/toto",
+    "method"  : "get",
+    "path"    : "/toto",
     "controller" : {
       "name"  : "ad",
       "fn"  : "fnA"
