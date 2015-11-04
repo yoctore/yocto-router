@@ -103,7 +103,7 @@ Router.prototype.configure = function () {
             method      : joi.string().required().empty().valid([
               'get', 'post', 'put', 'delete', 'options', 'head'
             ]),
-            path        : joi.string().required().empty().min(3),
+            path        : joi.string().required().empty().min(1),
             controller  : joi.object().required().min(2).max(2).keys({
               name  : joi.string().required().empty().min(1),
               fn    : joi.string().required().empty().min(1)
