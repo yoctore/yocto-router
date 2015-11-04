@@ -3,7 +3,7 @@ var r         = require('../src')();
 var express   = require('express');
 
 var app = express();
-
+app.set('render', { a : 'a' });
 r.setRoutes('./example/routes/');
 r.useApp(app);
 r.setEndPoint('./example/ctrl/'); 
