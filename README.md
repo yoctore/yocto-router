@@ -41,6 +41,7 @@ Your json configuration for routes must be follow these syntax :
   {
     "method"  : "YOUR_VALID_HTTP_METHOD_NAME_HERE",
     "path"    : "YOUR_ROUTE_PATTERN_HERE",
+    "regexp"  : "true|false" // Eval string as a regexp or not
     "controller" : {
       "name"  : "YOUR_CONTROLLER_NAME_HERE",
       "fn"  : "YOUR_CONTROLLER_FN_NAME_HERE"
