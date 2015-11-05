@@ -99,15 +99,16 @@ Router.prototype.configure = function () {
         // parses routes
         _.each(mods, function (mod) {
           // validation schema
-          var schema = joi.object().min(3).max(3).keys({
+          var schema = joi.object().min(3).max(4).keys({
             method      : joi.string().required().empty().valid([
               'get', 'post', 'put', 'delete', 'options', 'head'
             ]),
             path        : joi.string().required().empty().min(1),
+            regexp      : joi.boolean().default(false),
             controller  : joi.object().required().min(2).max(2).keys({
               name  : joi.string().required().empty().min(1),
               fn    : joi.string().required().empty().min(1)
-            }).allow('method', 'path', 'controller')
+            }).allow('method', 'path', 'controller', 'regexp')
           });
 
           // validate
@@ -123,42 +124,47 @@ Router.prototype.configure = function () {
                                     utils.obj.inspect(error)
                                   ].join(' '));
             }, this);
-          }
-
-          // build ctrlPath
-          var ctrlPath =  path.normalize([ [ this.ctrl, mod.controller.name ].join('/'), 'js'
-                                         ].join('.'));
-
-          // file exits ?
-          if (!fs.existsSync(ctrlPath)) {
-            // it looks like no ....
-            this.logger.warning([ '[ Router.configure ] - Given endpoint controller [',
-                                  mod.controller.name, '] for route [', ctrlName,
-                                  '] is invalid. Path [', ctrlPath,
-                                  '] is not found. Operation Aborted !' ].join(' '));
           } else {
-            // require controller
-            var controller = require(ctrlPath);
+            // build ctrlPath
+            var ctrlPath =  path.normalize([ [ this.ctrl, mod.controller.name ].join('/'), 'js'
+                                           ].join('.'));
 
-            // func exists and is a func ??
-            if (!_.has(controller, mod.controller.fn) ||
-                !_.isFunction(controller[mod.controller.fn])) {
-              // warning
-              this.logger.warning([ '[ Router.configure ] - Cannot find Function [',
-                                    mod.controller.fn, '] for controller [',
-                                    mod.controller.name, '] on [', ctrlPath,
-                                    ']. Operation Aborted' ].join(' '));
+            // file exits ?
+            if (!fs.existsSync(ctrlPath)) {
+              // it looks like no ....
+              this.logger.warning([ '[ Router.configure ] - Given endpoint controller [',
+                                    mod.controller.name, '] for route [', ctrlName,
+                                    '] is invalid. Path [', ctrlPath,
+                                    '] is not found. Operation Aborted !' ].join(' '));
             } else {
-              // messsage
-              this.logger.info([ '[ Router.configure ] - Adding route [',
-                                 mod.path, '] on a [',  mod.method.toUpperCase(),
-                                 '] HTTP Request with a callback on [',
-                                 [ mod.controller.name, mod.controller.fn ].join('.'),
-                                 ']' ].join(' '));
-              // adding route to current app
-              this.app[mod.method](mod.path, controller[mod.controller.fn].bind(this.app));
-              // increment nb routes
-              nbRoutes++;
+              // require controller
+              var controller = require(ctrlPath);
+
+              // func exists and is a func ??
+              if (!_.has(controller, mod.controller.fn) ||
+                  !_.isFunction(controller[mod.controller.fn])) {
+                // warning
+                this.logger.warning([ '[ Router.configure ] - Cannot find Function [',
+                                      mod.controller.fn, '] for controller [',
+                                      mod.controller.name, '] on [', ctrlPath,
+                                      ']. Operation Aborted' ].join(' '));
+              } else {
+                // messsage
+                this.logger.info([ '[ Router.configure ] - Adding route [',
+                                   mod.path, '] on a [',  mod.method.toUpperCase(),
+                                   '] HTTP Request with a callback on [',
+                                   [ mod.controller.name, mod.controller.fn ].join('.'),
+                                   ']' ].join(' '));
+                // has regexp
+                if (_.has(mod, 'regexp') && mod.regexp) {
+                  // path to regexp
+                  mod.path = new RegExp(mod.path);
+                }
+                // adding route to current app
+                this.app[mod.method](mod.path, controller[mod.controller.fn].bind(this.app));
+                // increment nb routes
+                nbRoutes++;
+              }
             }
           }
         }, this);

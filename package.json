@@ -1,6 +1,6 @@
 {
   "name": "yocto-router",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Manage route configuration & mapping for an express app",
   "scripts": {},
   "author": {

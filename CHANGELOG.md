@@ -1,3 +1,7 @@
+## 1.1.0 (2015-11-05)
+
+- Add Regexp process on route matching
+
 ## 1.0.3 (2015-11-03)
 
 - Bind app on endpoint function
