@@ -1,3 +1,7 @@
+## 1.2.0 (2015-11-12)
+
+- Add priority property on route definition to defined route ordre properly
+
 ## 1.1.0 (2015-11-05)
 
 - Add Regexp process on route matching

@@ -55,6 +55,9 @@ function Router (logger) {
  * @return {Boolean} true if all is ok false otherwise
  */
 Router.prototype.configure = function () {
+  // default list of routes
+  var routesList = [];
+
   // base message
   this.logger.banner('[ Router.configure ] - Initializing Router ...');
 
@@ -73,9 +76,6 @@ Router.prototype.configure = function () {
       this.logger.warning([ '[ Router.configure ] - No routes founded on',
                             this.routes ].join(' '));
     }
-
-    // process routes item
-    var nbRoutes = 0;
 
     // routes
     _.each(routes, function (item) {
@@ -99,16 +99,17 @@ Router.prototype.configure = function () {
         // parses routes
         _.each(mods, function (mod) {
           // validation schema
-          var schema = joi.object().min(3).max(4).keys({
+          var schema = joi.object().min(3).max(5).keys({
             method      : joi.string().required().empty().valid([
               'get', 'post', 'put', 'delete', 'options', 'head'
             ]),
             path        : joi.string().required().empty().min(1),
             regexp      : joi.boolean().default(false),
+            priority    : joi.number().default(100).min(0).max(999),
             controller  : joi.object().required().min(2).max(2).keys({
               name  : joi.string().required().empty().min(1),
               fn    : joi.string().required().empty().min(1)
-            }).allow('method', 'path', 'controller', 'regexp')
+            }).allow('method', 'path', 'controller', 'regexp', 'priority')
           });
 
           // validate
@@ -125,6 +126,9 @@ Router.prototype.configure = function () {
                                   ].join(' '));
             }, this);
           } else {
+            // override mod with joi validate value
+            mod = result.value;
+
             // build ctrlPath
             var ctrlPath =  path.normalize([ [ this.ctrl, mod.controller.name ].join('/'), 'js'
                                            ].join('.'));
@@ -155,26 +159,30 @@ Router.prototype.configure = function () {
                                    '] HTTP Request with a callback on [',
                                    [ mod.controller.name, mod.controller.fn ].join('.'),
                                    ']' ].join(' '));
+
                 // has regexp
                 if (_.has(mod, 'regexp') && mod.regexp) {
                   // path to regexp
                   mod.path = new RegExp(mod.path);
                 }
-                // adding route to current app
-                this.app[mod.method](mod.path, controller[mod.controller.fn].bind(this.app));
-                // increment nb routes
-                nbRoutes++;
+
+                // save priority
+                var priority = mod.priority;
+                // remove key
+                delete mod.priority;
+
+                // push routes item
+                routesList.push({
+                  item        : mod,
+                  controller  : controller,
+                  priority    : priority
+                });
               }
             }
           }
         }, this);
       }
     }, this);
-
-    // how many routes added ??
-    this.logger.info([ '[ Router.configure ] -', nbRoutes,
-                       (nbRoutes < 2 ? 'route' : 'routes'),
-                       'was added on current app' ].join(' '));
   } catch (e) {
     // something is invalid
     this.logger.error([ '[ Router.configure ] - An Error occured during routes initialization.',
@@ -185,6 +193,46 @@ Router.prototype.configure = function () {
   }
 
   // return true if all is valid
+  return this.addRoute(routesList);
+};
+
+/*
+ * Default method to add un route on current app. This method will sort route by given priority.
+ * By default this priority was defined to 100
+ *
+ * @param {Array} routes default route list
+ * @return {Boolean} return true if all is ok false otherwise
+ */
+Router.prototype.addRoute = function (routes) {
+  // has routes ?
+  if (routes.length > 0) {
+    // process routes
+    routes = _.sortBy(routes, function (route) {
+      // default sort statement
+      return this.min(route.priority);
+    }, Math);
+
+    // parse all routes
+    _.each(routes, function (route) {
+      // route
+      this.app[route.item.method].call(this.app, route.item.path,
+                                       route.controller[route.item.controller.fn].bind(this.app));
+    }, this);
+
+    // how many routes added ??
+    this.logger.info([ '[ Router.addRoute ] -', routes.length,
+                       (routes.length < 2 ? 'route' : 'routes'),
+                       'was added on current app' ].join(' '));
+
+  } else {
+    // log message
+    this.logger.warning('[ Router.addRoute ] - No routes to add.');
+
+    // invalid statement
+    return false;
+  }
+
+  // default statement
   return true;
 };
 
