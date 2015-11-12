@@ -1,20 +1,20 @@
 [
   {
-    "method"  : "post",
-    "path"    : "/ad/contact/details/:property?",
+    "method"  : "get",
+    "path"    : "/other",
     "priority" : 300,
     "controller" : {
       "name"  : "ad",
-      "fn"  : "fnB"
+      "fn"  : "other"
     }
   },
   {
     "method"  : "get",
-    "path"    : "/toto",
+    "path"    : "/other2",
     "priority" : 325,
     "controller" : {
       "name"  : "ad",
-      "fn"  : "fnA"
+      "fn"  : "other2"
     }
   }  
 ]

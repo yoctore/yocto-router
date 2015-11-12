@@ -1,18 +1,18 @@
 [
   {
-    "method"  : "post",
-    "path"    : "/ad/contact/details/:property?",
+    "method"  : "get",
+    "path"    : "/test1",
     "controller" : {
       "name"  : "ad",
-      "fn"  : "fnB"
+      "fn"  : "test1"
     }
   },
   {
     "method"  : "get",
-    "path"    : "/toto",
+    "path"    : "/test2",
     "controller" : {
       "name"  : "ad",
-      "fn"  : "fnA"
+      "fn"  : "test2"
     }
   }  
 ]

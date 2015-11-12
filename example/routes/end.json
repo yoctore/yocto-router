@@ -1,11 +1,11 @@
 [
   {
-    "method"  : "post",
-    "path"    : "/ad/contact/details/:property?",
-    "priority" : 200,
+    "method"  : "get",
+    "path"    : "*",
+    "priority" : 999,
     "controller" : {
       "name"  : "ad",
-      "fn"  : "fnA"
+      "fn"  : "end"
     }
   }  
 ]

@@ -65,6 +65,28 @@ See Below an example :
 ]
 ```
 
+## Routes for 404 and 500 HTTP codes
+
+You can also defined route process for 404 and 500 HTTP code, just follow config example below : 
+
+```javascript
+[
+  {
+    "error" : 404 | 500 // with code you want
+    "priority" : 100, // Defined your priority order on route definition into express very important
+    "controller" : {
+      "name"  : "YOUR_CONTROLLER_NAME_HERE",
+      "fn"  : "YOUR_CONTROLLER_FN_NAME_HERE"
+    }
+  }
+]
+```
+
+Into your controller just follow the express syntax for error middleware process.
+
+You can find here the [Express FAQ for more details](http://expressjs.com/starter/faq.html)
+
+
 ## Controller Javascript files syntax
 
 If you are here, it's because you have already define a least one route.

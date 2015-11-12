@@ -109,8 +109,21 @@ Router.prototype.configure = function () {
             controller  : joi.object().required().min(2).max(2).keys({
               name  : joi.string().required().empty().min(1),
               fn    : joi.string().required().empty().min(1)
-            }).allow('method', 'path', 'controller', 'regexp', 'priority')
-          });
+            }).allow('name', 'fn')
+          }).allow('method', 'path', 'controller', 'regexp', 'priority');
+
+          // is error path ? so need to clean validation rules
+          if (_.has(mod, 'error')) {
+            // defined error schema
+            schema = joi.object().min(3).max(3).keys({
+              priority    : joi.number().default(100).min(0).max(999),
+              error       : joi.number().optional().allow([ 404, 500 ]),
+              controller  : joi.object().required().min(2).max(2).keys({
+                name  : joi.string().required().empty().min(1),
+                fn    : joi.string().required().empty().min(1)
+              }).allow('name', 'fn')
+            }).allow('controller', 'priority', 'error');
+          }
 
           // validate
           var result = schema.validate(mod);
@@ -155,7 +168,8 @@ Router.prototype.configure = function () {
               } else {
                 // messsage
                 this.logger.info([ '[ Router.configure ] - Adding route [',
-                                   mod.path, '] on a [',  mod.method.toUpperCase(),
+                                   mod.path || mod.error, '] on a [',
+                                   (mod.method ? mod.method.toUpperCase() : mod.error),
                                    '] HTTP Request with a callback on [',
                                    [ mod.controller.name, mod.controller.fn ].join('.'),
                                    ']' ].join(' '));
@@ -214,9 +228,15 @@ Router.prototype.addRoute = function (routes) {
 
     // parse all routes
     _.each(routes, function (route) {
-      // route
-      this.app[route.item.method].call(this.app, route.item.path,
-                                       route.controller[route.item.controller.fn].bind(this.app));
+      // is normal route ?
+      if (!_.has(route.item, 'error')) {
+        // route
+        this.app[route.item.method].call(this.app, route.item.path,
+                                         route.controller[route.item.controller.fn].bind(this.app));
+      } else {
+        // default handler for error
+        this.app.use(route.controller[route.item.controller.fn].bind(this.app));
+      }
     }, this);
 
     // how many routes added ??

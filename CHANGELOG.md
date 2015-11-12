@@ -1,3 +1,7 @@
+## 1.3.0 (2015-11-12)
+
+- Add 404 & 500 process on route config
+
 ## 1.2.0 (2015-11-12)
 
 - Add priority property on route definition to defined route ordre properly
