@@ -243,13 +243,9 @@ Router.prototype.addRoute = function (routes) {
     this.logger.info([ '[ Router.addRoute ] -', routes.length,
                        (routes.length < 2 ? 'route' : 'routes'),
                        'was added on current app' ].join(' '));
-
   } else {
     // log message
     this.logger.warning('[ Router.addRoute ] - No routes to add.');
-
-    // invalid statement
-    return false;
   }
 
   // default statement

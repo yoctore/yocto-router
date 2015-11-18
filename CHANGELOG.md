@@ -1,3 +1,13 @@
+## 1.3.2 (2015-11-18)
+
+- Now we return true when no route was founded. we display just a warning.
+
+In some case this is very useful, to not stop app.
+
+## 1.3.1 (2015-11-13)
+
+- Update package dependencies
+
 ## 1.3.0 (2015-11-12)
 
 - Add 404 & 500 process on route config
