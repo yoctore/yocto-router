@@ -1,6 +1,6 @@
 {
   "name": "yocto-router",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Manage route configuration & mapping for an express app",
   "scripts": {},
   "author": {
@@ -31,10 +31,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/yocto-node-modules/yocto-router.git"
+    "url": "https://github.com/yoctore/yocto-router.git"
   },
   "bugs": {
-    "url": "https://gitlab.com/yocto-node-modules/yocto-router/issues"
+    "url": "https://github.com/yoctore/yocto-router/issues"
   },
   "files": [
     "dist",

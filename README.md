@@ -1,3 +1,5 @@
+![alt text](https://david-dm.org/yoctore/yocto-router.svg "Dependencies Status")
+
 ## Overview
 
 This module is a part of yocto node modules for NodeJS.
@@ -119,4 +121,4 @@ var router = require('yocto-router')(logger);
 
 ## Changelog
 
-All history is [here](https://gitlab.com/yocto-node-modules/yocto-router/blob/master/CHANGELOG.md)
+All history is [here](https://github.com/yoctore/yocto-router/blob/master/CHANGELOG.md)
