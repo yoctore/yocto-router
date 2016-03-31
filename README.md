@@ -1,4 +1,10 @@
+[![NPM](https://nodei.co/npm/yocto-router.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/yocto-router/)
+
 ![alt text](https://david-dm.org/yoctore/yocto-router.svg "Dependencies Status")
+[![Code Climate](https://codeclimate.com/github/yoctore/yocto-router/badges/gpa.svg)](https://codeclimate.com/github/yoctore/yocto-router)
+[![Test Coverage](https://codeclimate.com/github/yoctore/yocto-router/badges/coverage.svg)](https://codeclimate.com/github/yoctore/yocto-router/coverage)
+[![Issue Count](https://codeclimate.com/github/yoctore/yocto-router/badges/issue_count.svg)](https://codeclimate.com/github/yoctore/yocto-router)
+[![Build Status](https://travis-ci.org/yoctore/yocto-router.svg?branch=master)](https://travis-ci.org/yoctore/yocto-router)
 
 ## Overview
 

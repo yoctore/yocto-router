@@ -1,3 +1,9 @@
+## 1.3.4 (2016-03-31)
+
+- Update package json
+- Add unit tests
+- Update README.md
+
 ## 1.3.2 (2015-11-18)
 
 - Now we return true when no route was founded. we display just a warning.
