@@ -12,6 +12,7 @@ var fs            = require('fs');
  * Manage route for node js app
  *
  * @class Router
+ * @param {Object} logger Logger instance
  */
 function Router (logger) {
   /**
@@ -20,7 +21,7 @@ function Router (logger) {
    * @property logger
    * @type Object
    */
-  this.logger   = logger;
+  this.logger = logger;
 
   /**
    * Default base path for routes
@@ -28,7 +29,7 @@ function Router (logger) {
    * @property routes
    * @type String
    */
-  this.routes   = process.cwd();
+  this.routes = process.cwd();
 
   /**
    * Default base path for controller assign on routes
@@ -36,7 +37,7 @@ function Router (logger) {
    * @property ctrl
    * @type String
    */
-  this.ctrl     = process.cwd();
+  this.ctrl = process.cwd();
 
   /**
    * Default app value must be an express app
@@ -45,7 +46,7 @@ function Router (logger) {
    * @type String
    * @default Null
    */
-  this.app      = null;
+  this.app = null;
 }
 
 /**
@@ -55,158 +56,164 @@ function Router (logger) {
  * @return {Boolean} true if all is ok false otherwise
  */
 Router.prototype.configure = function () {
-  // default list of routes
+  // Default list of routes
   var routesList = [];
 
-  // base message
+  // Base message
   this.logger.banner('[ Router.configure ] - Initializing Router ...');
 
-  // main process
+  // Main process
   try {
-    // check app
+    // Check app
     if (!_.has(this.app, 'use') || !_.isFunction(this.app.use)) {
       throw 'Your app is invalid. Please ad a valid express app on your Router.app property';
     }
 
-    // getting toutes
-    var routes = glob.sync('*.json', { cwd : this.routes, nosort : true, realpath : true });
+    // Getting toutes
+    var routes = glob.sync('*.json', {
+      cwd      : this.routes,
+      nosort   : true,
+      realpath : true
+    });
 
-    // empty routes ?
+    // Empty routes ?
     if (_.isEmpty(routes)) {
       this.logger.warning([ '[ Router.configure ] - No routes founded on',
-                            this.routes ].join(' '));
+        this.routes ].join(' '));
     }
 
-    // routes
+    // Routes
     _.each(routes, function (item) {
-      // get controller name
+      // Get controller name
       var ctrlName = item.replace(this.routes, '');
 
-      // logging message
+      // Logging message
       this.logger.info([ '[ Router.configure ] - Retreiving routes for [',
-                         ctrlName, ']' ].join(' '));
+        ctrlName, ']' ].join(' '));
 
-      // require module
+      // Require module
       var mods = JSON.parse(fs.readFileSync(item));
 
-      // has routes ?
+      // Has routes ?
       if (_.isEmpty(mods)) {
-        // war message
+        // War message
         this.logger.warning([ '[ Router.configure ] - Module [', ctrlName,
-                              '] doesn\'t have any routes.',
-                              'Remove this file or add one route configuration' ].join(' '));
+          '] doesn\'t have any routes.',
+          'Remove this file or add one route configuration' ].join(' '));
       } else {
-        // parses routes
+        // Parses routes
         _.each(mods, function (mod) {
-          // validation schema
+          // Validation schema
           var schema = joi.object().min(3).max(5).keys({
-            method      : joi.string().required().empty().valid([
+            method : joi.string().required().empty().valid([
               'get', 'post', 'put', 'delete', 'options', 'head'
             ]),
-            path        : joi.string().required().empty().min(1),
-            regexp      : joi.boolean().default(false),
-            priority    : joi.number().default(100).min(0).max(999),
-            controller  : joi.object().required().min(2).max(2).keys({
-              name  : joi.string().required().empty().min(1),
-              fn    : joi.string().required().empty().min(1)
+            path       : joi.string().required().empty().min(1),
+            regexp     : joi.boolean().default(false),
+            priority   : joi.number().default(100).min(0).max(999),
+            controller : joi.object().required().min(2).max(2).keys({
+              name : joi.string().required().empty().min(1),
+              fn   : joi.string().required().empty().min(1)
             }).allow('name', 'fn')
           }).allow('method', 'path', 'controller', 'regexp', 'priority');
 
-          // is error path ? so need to clean validation rules
+          // Is error path ? so need to clean validation rules
           if (_.has(mod, 'error')) {
-            // defined error schema
+            // Defined error schema
             schema = joi.object().min(3).max(3).keys({
-              priority    : joi.number().default(100).min(0).max(999),
-              error       : joi.number().optional().allow([ 404, 500 ]),
-              controller  : joi.object().required().min(2).max(2).keys({
-                name  : joi.string().required().empty().min(1),
-                fn    : joi.string().required().empty().min(1)
+              priority   : joi.number().default(100).min(0).max(999),
+              error      : joi.number().optional().allow([ 404, 500 ]),
+              controller : joi.object().required().min(2).max(2).keys({
+                name : joi.string().required().empty().min(1),
+                fn   : joi.string().required().empty().min(1)
               }).allow('name', 'fn')
             }).allow('controller', 'priority', 'error');
           }
 
-          // validate
+          // Validate
           var result = schema.validate(mod);
 
-          // has error
+          // Has error
           if (!_.isNull(result.error)) {
-            // parse details
+            // Parse details
             _.each(result.error.details, function (error) {
               this.logger.warning([ '[ Router.configure ] - Cannot add route for',
-                                    ctrlName,
-                                    'config given is invalid. Error is :',
-                                    utils.obj.inspect(error)
-                                  ].join(' '));
-            }, this);
+                ctrlName,
+                'config given is invalid. Error is :',
+                utils.obj.inspect(error)
+              ].join(' '));
+            }.bind(this));
           } else {
-            // override mod with joi validate value
+            // Override mod with joi validate value
             mod = result.value;
 
-            // build ctrlPath
+            // Build ctrlPath
             var ctrlPath =  path.normalize([ [ this.ctrl, mod.controller.name ].join('/'), 'js'
-                                           ].join('.'));
+            ].join('.'));
 
-            // file exits ?
+            // File exits ?
             if (!fs.existsSync(ctrlPath)) {
-              // it looks like no ....
+              // It looks like no ....
               this.logger.warning([ '[ Router.configure ] - Given endpoint controller [',
-                                    mod.controller.name, '] for route [', ctrlName,
-                                    '] is invalid. Path [', ctrlPath,
-                                    '] is not found. Operation Aborted !' ].join(' '));
+                mod.controller.name, '] for route [', ctrlName,
+                '] is invalid. Path [', ctrlPath,
+                '] is not found. Operation Aborted !' ].join(' '));
             } else {
-              // require controller
+              // Require controller
               var controller = require(ctrlPath);
 
-              // func exists and is a func ??
+              // Func exists and is a func ??
               if (!_.has(controller, mod.controller.fn) ||
                   !_.isFunction(controller[mod.controller.fn])) {
-                // warning
+                // Warning
                 this.logger.warning([ '[ Router.configure ] - Cannot find Function [',
-                                      mod.controller.fn, '] for controller [',
-                                      mod.controller.name, '] on [', ctrlPath,
-                                      ']. Operation Aborted' ].join(' '));
+                  mod.controller.fn, '] for controller [',
+                  mod.controller.name, '] on [', ctrlPath,
+                  ']. Operation Aborted' ].join(' '));
               } else {
-                // messsage
+                // Messsage
                 this.logger.info([ '[ Router.configure ] - Adding route [',
-                                   mod.path || mod.error, '] on a [',
-                                   (mod.method ? mod.method.toUpperCase() : mod.error),
-                                   '] HTTP Request with a callback on [',
-                                   [ mod.controller.name, mod.controller.fn ].join('.'),
-                                   ']' ].join(' '));
+                  mod.path || mod.error, '] on a [',
+                  mod.method ? mod.method.toUpperCase() : mod.error,
+                  '] HTTP Request with a callback on [',
+                  [ mod.controller.name, mod.controller.fn ].join('.'),
+                  ']' ].join(' '));
 
-                // has regexp
+                // Has regexp
                 if (_.has(mod, 'regexp') && mod.regexp) {
-                  // path to regexp
+                  // Path to regexp
                   mod.path = new RegExp(mod.path);
                 }
 
-                // save priority
+                // Save priority
                 var priority = mod.priority;
-                // remove key
+
+                // Remove key
+
                 delete mod.priority;
 
-                // push routes item
+                // Push routes item
                 routesList.push({
-                  item        : mod,
-                  controller  : controller,
-                  priority    : priority
+                  item       : mod,
+                  controller : controller,
+                  priority   : priority
                 });
               }
             }
           }
-        }, this);
+        }.bind(this));
       }
-    }, this);
+    }.bind(this));
   } catch (e) {
-    // something is invalid
+    // Something is invalid
     this.logger.error([ '[ Router.configure ] - An Error occured during routes initialization.',
-                        'error is :', e, 'Operation aborted !' ] .join(' '));
+      'error is :', e, 'Operation aborted !' ].join(' '));
 
-    // statement
+    // Statement
     return false;
   }
 
-  // return true if all is valid
+  // Return true if all is valid
   return this.addRoute(routesList);
 };
 
@@ -218,37 +225,37 @@ Router.prototype.configure = function () {
  * @return {Boolean} return true if all is ok false otherwise
  */
 Router.prototype.addRoute = function (routes) {
-  // has routes ?
+  // Has routes ?
   if (routes.length > 0) {
-    // process routes
+    // Process routes
     routes = _.sortBy(routes, function (route) {
-      // default sort statement
+      // Default sort statement
       return this.min(route.priority);
-    }, Math);
+    }.bind(Math));
 
-    // parse all routes
+    // Parse all routes
     _.each(routes, function (route) {
-      // is normal route ?
+      // Is normal route ?
       if (!_.has(route.item, 'error')) {
-        // route
-        this.app[route.item.method].call(this.app, route.item.path,
-                                         route.controller[route.item.controller.fn].bind(this.app));
+        // Route
+        this.app[route.item.method](route.item.path,
+          route.controller[route.item.controller.fn]);
       } else {
-        // default handler for error
+        // Default handler for error
         this.app.use(route.controller[route.item.controller.fn].bind(this.app));
       }
-    }, this);
+    }.bind(this));
 
-    // how many routes added ??
+    // How many routes added ??
     this.logger.info([ '[ Router.addRoute ] -', routes.length,
-                       (routes.length < 2 ? 'route' : 'routes'),
-                       'was added on current app' ].join(' '));
+      routes.length < 2 ? 'route' : 'routes',
+      'was added on current app' ].join(' '));
   } else {
-    // log message
+    // Log message
     this.logger.warning('[ Router.addRoute ] - No routes to add.');
   }
 
-  // default statement
+  // Default statement
   return true;
 };
 
@@ -259,7 +266,7 @@ Router.prototype.addRoute = function (routes) {
  * @return {Boolean} true if all is ok false otherwise
  */
 Router.prototype.setRoutes = function (path) {
-  // default statement
+  // Default statement
   return this.set('routes', path);
 };
 
@@ -270,7 +277,7 @@ Router.prototype.setRoutes = function (path) {
  * @return {Boolean} true if all is ok false otherwise
  */
 Router.prototype.setEndPoint = function (path) {
-  // default statement
+  // Default statement
   return this.set('ctrl', path);
 };
 
@@ -281,7 +288,7 @@ Router.prototype.setEndPoint = function (path) {
  * @return {Boolean} true if all is ok false otherwise
  */
 Router.prototype.useApp = function (app) {
-  // default statement
+  // Default statement
   return this.set('app', app);
 };
 
@@ -293,54 +300,58 @@ Router.prototype.useApp = function (app) {
  * @return {Boolean} true if all is ok false otherwise
  */
 Router.prototype.set = function (name, value) {
-  // check requirements
+  // Check requirements
   if (!_.isUndefined(name) && _.isString(name) && !_.isEmpty(name)) {
-    // is relative ?
+    // Is relative ?
     if ((name === 'routes' || name === 'ctrl') && !path.isAbsolute(value)) {
-      // process correct path
+      // Process correct path
       value = path.normalize([ process.cwd(), value ].join('/'));
 
-      // try here exception can be throwed
+      // Try here exception can be throwed
       try {
-        // parse file
+        // Parse file
         var parse   = fs.statSync(value);
-        // change state
+
+        // Change state
+
         if (!parse.isDirectory()) {
-          // throw exception here
+          // Throw exception here
           throw [ 'Path is not a directory for :', name ].join(' ');
         }
-
       } catch (e) {
-        // warn message
+        // Warn message
         this.logger.warning([ '[ Router.set ] - given value is not a directory : ', e ].join(' '));
-        // return invalid statement if we are here
+
+        // Return invalid statement if we are here
         return false;
       }
     }
 
-    // assign value
+    // Assign value
     this[name] = value;
   } else {
-    // log a warning messsage.
+    // Log a warning messsage.
     this.logger.warning([ '[ Router.set ] - Invalid value given.',
-                          'name must be a string and not empty. Operation aborted !' ].join(' '));
-    // invalid statement
+      'name must be a string and not empty. Operation aborted !' ].join(' '));
+
+    // Invalid statement
     return false;
   }
 
-  // returning current instance
+  // Returning current instance
   return true;
 };
 
 // Default export
 module.exports = function (l) {
-  // is a valid logger ?
+  // Is a valid logger ?
   if (_.isUndefined(l) || _.isNull(l)) {
     logger.warning('[ Router.constructor ] - Invalid logger given. Use internal logger');
-    // assign
+
+    // Assign
     l = logger;
   }
 
-  // default statement
-  return new (Router)(l);
+  // Default statement
+  return new Router(l);
 };
