@@ -1,3 +1,8 @@
+## 2.0.0 (2018-02-16)
+
+- Major update of all dependencies
+- Update node version engine to >= 8.9.4
+
 ## 1.3.4 (2016-03-31)
 
 - Update package json

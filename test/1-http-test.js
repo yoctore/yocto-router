@@ -9,7 +9,7 @@ var express   = require('express');
 var _         = require('lodash');
 var path      = require('path');
 
-logger.disableConsole();
+// logger.disableConsole();
 
 // routes list
 var routes = [
@@ -27,14 +27,14 @@ describe('Render ->', function () {
       var r = app.get('render');
       // test case
       expect(r).to.not.empty;
-      expect(r).to.be.an.object;
+      expect(r).to.be.an('object');
       expect(r).to.deep.equal({ foo : 'bar' });
     });
-    
+
     it ('Attached router with app must be succeed', function () {
       var state = r.useApp(app);
       // unit test
-      expect(state).to.be.a.boolean;
+      expect(state).to.be.a('boolean');
       expect(state).to.equal(true);
     });
   });
@@ -47,12 +47,12 @@ describe('Render ->', function () {
         var state = false;
         // has endpoint
         if (ro.endpoint) {
-          state = r.setEndPoint(ro.path); 
+          state = r.setEndPoint(ro.path);
         } else {
           state = r.setRoutes(ro.path);
         }
         // unit test
-        expect(state).to.be.a.boolean;
+        expect(state).to.be.a('boolean');
         expect(state).to.equal(true);
       });
       it ([ 'Except setted path to be the strict equal to ', ro.path ].join(' '), function () {
@@ -67,7 +67,7 @@ describe('Render ->', function () {
     it ('Expect to be a boolean and equal to true', function () {
       var state = r.configure();
       // unit test
-      expect(state).to.be.a.boolean;
+      expect(state).to.be.a('boolean');
       expect(state).to.equal(true);
     });
     it ('Expect to be a not empty string and a type of [ GET | POST | PUT | DELETE | PATCH ] route',
