@@ -1,3 +1,7 @@
+## 2.0.1 (2018-02-22)
+
+- Bug fix when bind function
+
 ## 2.0.0 (2018-02-16)
 
 - Major update of all dependencies

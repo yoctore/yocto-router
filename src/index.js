@@ -239,7 +239,7 @@ Router.prototype.addRoute = function (routes) {
       if (!_.has(route.item, 'error')) {
         // Route
         this.app[route.item.method](route.item.path,
-          route.controller[route.item.controller.fn]);
+          route.controller[route.item.controller.fn].bind(this.app));
       } else {
         // Default handler for error
         this.app.use(route.controller[route.item.controller.fn].bind(this.app));
